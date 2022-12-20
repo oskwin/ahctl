@@ -50,6 +50,7 @@ func mainApp() int {
 		return -1
 	}
 
+	// Checking for missing arguments
 	if (*ca != "" && (*cert == "" || *key == "")) || (*cert != "" && (*ca == "" || *key == "")) || (*key != "" && (*cert == "" || *ca == "")) {
 		fmt.Println("Error: missing arguments!")
 		fmt.Println("Use 'ahctl --help' to see usage.")
@@ -57,16 +58,25 @@ func mainApp() int {
 	}
 
 	if *command == "sr-echo" || *command == "or-echo" || *command == "au-echo" || *command == "dm-echo" {
+
 	} else if *command == "get-all-systems" {
+		// This will get all the systems available
+
 	} else if *command == "get-all-services" {
+		// Get all the available services
+
 	} else if *command == "get-grouped" {
+
 	} else {
+		// Command received is unknown, return -1 to mark an error
 		fmt.Printf("Unknown command: %s\n", *command)
 		return -1
 	}
 
+	// create a new client variable "client"
 	var client http.Client
 
+	// Check the files of certificate etc. If not, return -1. Else run in unsecure mode
 	if *ca != "" && *cert != "" && *key != "" {
 		ok, _ := fileExists(*ca)
 		if !ok {
@@ -83,7 +93,7 @@ func mainApp() int {
 			fmt.Printf("Error: key file %s does not exist\n", *key)
 			return -1
 		}
-
+		// Read the files after making sure they exist
 		caCert, err := ioutil.ReadFile(*ca)
 		if err != nil {
 			log.Fatalf("Error opening cert file %s, Error: %s", *ca, err)
@@ -113,7 +123,6 @@ func mainApp() int {
 				fmt.Println(string(data))
 			}
 		}
-
 	} else {
 		//fmt.Println("Running unsecure mode ...")
 		client = http.Client{Timeout: 10 * time.Second}
@@ -225,7 +234,6 @@ func ReadData2Object[T any](bytes []byte) (*T, error) {
 	return out, nil
 }
 
-//
 func getData(client http.Client, uri string) ([]byte, error) {
 	request, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
